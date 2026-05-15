@@ -91,6 +91,7 @@ export default function BattleScreen({ userId, lang, onLogout }) {
       setFloatText(side === 'red' ? '🔴 +RED' : '⚪ +WHITE');
       setTimeout(() => { setFlashClass(''); setFloatText(null); }, 1400);
       fetchResults(false); // 背景同步，不 await
+      setTimeout(() => onLogout(), 4000); // 4 秒後自動跳出
     } catch {
       setChoice(null);
     }
