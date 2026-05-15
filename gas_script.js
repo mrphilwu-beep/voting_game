@@ -15,6 +15,7 @@ function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
     if (body.action === 'submitVote') return respond(submitVote(body.id, body.choice, body.level));
+    if (body.action === 'resetVotes') return respond(resetVotesRemote(body.password));
     return respond({ error: 'unknown action' });
   } catch (err) {
     return respond({ error: err.message });
@@ -84,6 +85,34 @@ function backfillVotedIds() {
     .flat().map(v => String(v).toUpperCase());
   for (const id of votedIds) {
     markIdAsVoted(ss, id);
+  }
+}
+
+// ── resetVotesRemote（HTTP 呼叫，需密碼）─────────────────────
+const RESET_PASSWORD = 'noodle2025';
+
+function resetVotesRemote(password) {
+  if (password !== RESET_PASSWORD) return { success: false, reason: 'wrong password' };
+  resetVotes();
+  return { success: true };
+}
+
+// ── resetVotes（手動執行，清除所有投票記錄並重置 ID 標示）───────
+function resetVotes() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // 清除 Votes 分頁（保留標題列）
+  const voteSheet = getOrCreateVoteSheet(ss);
+  if (voteSheet.getLastRow() > 1) {
+    voteSheet.getRange(2, 1, voteSheet.getLastRow() - 1, voteSheet.getLastColumn()).clearContent();
+  }
+
+  // 清除 ID 分頁 B 欄的 ✓ 標記與背景色
+  const idSheet = ss.getSheetByName('ID');
+  if (idSheet && idSheet.getLastRow() > 1) {
+    const range = idSheet.getRange(2, 2, idSheet.getLastRow() - 1, 1);
+    range.clearContent();
+    range.setBackground(null);
   }
 }
 

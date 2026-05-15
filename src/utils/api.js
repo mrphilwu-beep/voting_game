@@ -49,4 +49,20 @@ export async function getResults(level) {
   return data;
 }
 
+export async function resetVotes(password) {
+  if (USE_MOCK) {
+    await delay(300);
+    if (password !== 'noodle2025') return { success: false, reason: 'wrong password' };
+    Object.keys(mockResults).forEach(k => { mockResults[k] = { red: 0, white: 0 }; });
+    Object.keys(mockVotes).forEach(k => delete mockVotes[k]);
+    return { success: true };
+  }
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'resetVotes', password }),
+  });
+  return res.json();
+}
+
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
