@@ -8,6 +8,7 @@ function doGet(e) {
   const action = e.parameter.action;
   if (action === 'validateId') return respond(validateId(e.parameter.id));
   if (action === 'getResults') return respond(getResults(Number(e.parameter.level)));
+  if (action === 'resetVotes') return respond(resetVotesRemote(e.parameter.password));
   return respond({ error: 'unknown action' });
 }
 

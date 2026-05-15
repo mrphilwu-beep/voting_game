@@ -57,11 +57,7 @@ export async function resetVotes(password) {
     Object.keys(mockVotes).forEach(k => delete mockVotes[k]);
     return { success: true };
   }
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'resetVotes', password }),
-  });
+  const res = await fetch(`${GAS_URL}?action=resetVotes&password=${encodeURIComponent(password)}`);
   return res.json();
 }
 
