@@ -7,7 +7,7 @@ const MAX_BLOCKS = 30;
 const BLOCK_PX = 16;
 const BLOCK_W = 44;
 
-function SideBar({ count, side, burst }) {
+function SideBar({ count, side, burst, ready }) {
   const isRed = side === 'red';
   const blocks = Math.min(count, MAX_BLOCKS);
   const colorA = isRed ? '#e63946' : '#a8dadc';
@@ -22,7 +22,7 @@ function SideBar({ count, side, burst }) {
         className={burst ? 'count-pop' : ''}
         style={{ fontSize: 64, color: colorA, marginBottom: 16, fontFamily: 'monospace', textShadow: `0 0 30px ${colorA}` }}
       >
-        {count}
+        {ready ? count : '—'}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', height: MAX_BLOCKS * BLOCK_PX, gap: 2 }}>
         {Array.from({ length: MAX_BLOCKS }).map((_, i) => {
@@ -52,6 +52,7 @@ function SideBar({ count, side, burst }) {
 
 export default function ResultsDisplay({ width, height }) {
   const [results, setResults] = useState({ red: 0, white: 0, total: 0 });
+  const [ready, setReady] = useState(false);
   const [burst, setBurst] = useState({ red: false, white: false });
   const [lastUpdated, setLastUpdated] = useState(null);
   const [showReset, setShowReset] = useState(false);
@@ -94,6 +95,7 @@ export default function ResultsDisplay({ width, height }) {
       }
       prevRef.current = { red: data.red, white: data.white };
       setResults(data);
+      setReady(true);
       setLastUpdated(new Date().toLocaleTimeString('zh-TW'));
     } catch {}
   }
@@ -162,13 +164,13 @@ export default function ResultsDisplay({ width, height }) {
 
         {/* Bars */}
         <div style={{ flex: 1, display: 'flex', gap: 80, alignItems: 'flex-end', justifyContent: 'center' }}>
-          <SideBar count={results.red} side="red" burst={burst.red} />
+          <SideBar count={results.red} side="red" burst={burst.red} ready={ready} />
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, paddingBottom: 40 }}>
             <div style={{ fontFamily: 'monospace', color: '#333', fontSize: 56 }}>VS</div>
             <div style={{ fontFamily: 'monospace', color: '#555', fontSize: 16, letterSpacing: 2 }}>TOTAL</div>
-            <div style={{ fontFamily: 'monospace', color: '#fff', fontSize: 40 }}>{results.total}</div>
+            <div style={{ fontFamily: 'monospace', color: '#fff', fontSize: 40 }}>{ready ? results.total : '—'}</div>
           </div>
-          <SideBar count={results.white} side="white" burst={burst.white} />
+          <SideBar count={results.white} side="white" burst={burst.white} ready={ready} />
         </div>
       </div>
     </div>
