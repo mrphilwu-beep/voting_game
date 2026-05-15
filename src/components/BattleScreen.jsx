@@ -159,26 +159,26 @@ export default function BattleScreen({ userId, lang, onLogout }) {
       </div>
 
       {/* Vote buttons */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 16, position: 'relative', zIndex: 1 }}>
-        <button
-          className={`btn-pixel btn-red`}
-          style={{ flex: 1, opacity: voted && choice !== 'red' ? 0.35 : 1, outline: choice === 'red' ? '3px solid #fff' : 'none' }}
-          onClick={() => handleVote('red')}
-          disabled={voted || loading}
-        >
-          {t.redBtn}
-          {choice === 'red' && <span style={{ fontSize: 8 }}> ✓</span>}
-        </button>
-        <button
-          className={`btn-pixel btn-white-side`}
-          style={{ flex: 1, opacity: voted && choice !== 'white' ? 0.35 : 1, outline: choice === 'white' ? '3px solid #1a1a2e' : 'none' }}
-          onClick={() => handleVote('white')}
-          disabled={voted || loading}
-        >
-          {t.whiteBtn}
-          {choice === 'white' && <span style={{ fontSize: 8 }}> ✓</span>}
-        </button>
-      </div>
+      {!voted && (
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16, position: 'relative', zIndex: 1 }}>
+          <button
+            className={`btn-pixel btn-red`}
+            style={{ flex: 1 }}
+            onClick={() => handleVote('red')}
+            disabled={loading}
+          >
+            {t.redBtn}
+          </button>
+          <button
+            className={`btn-pixel btn-white-side`}
+            style={{ flex: 1 }}
+            onClick={() => handleVote('white')}
+            disabled={loading}
+          >
+            {t.whiteBtn}
+          </button>
+        </div>
+      )}
 
       {/* Status */}
       <div className="pixel-box" style={{ padding: 16, marginBottom: 12, position: 'relative', zIndex: 1, textAlign: 'center' }}>
