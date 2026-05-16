@@ -63,7 +63,7 @@ export default function AdminPanel() {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <div style={{ color: '#ffd700', fontSize: 13, letterSpacing: 6, marginBottom: 8 }}>◆ 2025 牛肉麵節 ◆</div>
+          <div style={{ color: '#ffd700', fontSize: 13, letterSpacing: 6, marginBottom: 8 }}>◆ 2026 牛肉麵節 ◆</div>
           <div style={{ color: '#fff', fontSize: 28, letterSpacing: 6 }}>後台管理</div>
         </div>
 

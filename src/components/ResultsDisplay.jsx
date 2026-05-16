@@ -132,7 +132,7 @@ export default function ResultsDisplay({ width, height }) {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 40, position: 'relative' }}>
           <div style={{ fontFamily: 'monospace', color: '#ffd700', fontSize: 14, letterSpacing: 8, marginBottom: 8 }}>
-            ◆ 2025 牛肉麵節 ◆
+            ◆ 2026 牛肉麵節 ◆
           </div>
           <div style={{ fontFamily: 'monospace', color: '#fff', fontSize: 48, letterSpacing: 10, textShadow: '0 0 40px #ffd70088' }}>
             即時投票結果

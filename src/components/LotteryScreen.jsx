@@ -143,7 +143,7 @@ export default function LotteryScreen() {
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 48, position: 'relative', zIndex: 1 }}>
-        <div style={{ color: '#ffd700', fontSize: 14, letterSpacing: 8, marginBottom: 8 }}>◆ 2025 牛肉麵節 ◆</div>
+        <div style={{ color: '#ffd700', fontSize: 14, letterSpacing: 8, marginBottom: 8 }}>◆ 2026 牛肉麵節 ◆</div>
         <div style={{ color: '#fff', fontSize: 36, letterSpacing: 8 }}>幸運抽獎</div>
       </div>
 
