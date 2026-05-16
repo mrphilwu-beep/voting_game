@@ -4,7 +4,7 @@ import { getResults, resetVotes, endVoting } from '../utils/api';
 export default function AdminPanel() {
   const [results, setResults] = useState({ red: 0, white: 0, total: 0 });
   const [ready, setReady] = useState(false);
-  const [password, setPassword] = useState('');
+
   const [resetMsg, setResetMsg] = useState('');
   const [resetting, setResetting] = useState(false);
   const [lotteryReady, setLotteryReady] = useState(
@@ -51,12 +51,6 @@ export default function AdminPanel() {
     setResetting(false);
   }
 
-  async function handleReset() {
-    if (!password) return;
-    await doResetWithPassword(password);
-    setTimeout(() => setResetMsg(''), 3000);
-  }
-
   const redPct = results.total > 0 ? Math.round(results.red / results.total * 100) : 0;
   const whitePct = results.total > 0 ? Math.round(results.white / results.total * 100) : 0;
 
@@ -97,37 +91,6 @@ export default function AdminPanel() {
             <div style={{ marginTop: 16, height: 12, background: '#111', border: '1px solid #333', overflow: 'hidden', display: 'flex' }}>
               <div style={{ width: `${redPct}%`, background: '#e63946', transition: 'width 0.5s' }} />
               <div style={{ flex: 1, background: '#a8dadc', transition: 'width 0.5s' }} />
-            </div>
-          )}
-        </div>
-
-        {/* Reset */}
-        <div className="pixel-box" style={{ padding: 24 }}>
-          <div style={{ color: '#ffd700', fontSize: 11, letterSpacing: 3, marginBottom: 20 }}>重置投票</div>
-          <div style={{ color: '#888', fontSize: 11, marginBottom: 16 }}>
-            重置後所有投票記錄將清除，所有人可重新投票。
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <input
-              type="password"
-              placeholder="輸入密碼"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleReset()}
-              style={{ flex: 1, fontFamily: 'monospace', fontSize: 13, background: '#0a0a1a', border: '2px solid #333', color: '#fff', padding: '10px 14px' }}
-            />
-            <button
-              onClick={handleReset}
-              disabled={resetting || !password}
-              className="btn-pixel btn-red"
-              style={{ fontSize: 11, padding: '10px 20px', opacity: !password ? 0.4 : 1 }}
-            >
-              {resetting ? '處理中...' : 'RESET'}
-            </button>
-          </div>
-          {resetMsg && (
-            <div style={{ marginTop: 12, fontSize: 12, color: resetMsg.startsWith('✓') ? '#4caf50' : '#e63946' }}>
-              {resetMsg}
             </div>
           )}
         </div>
