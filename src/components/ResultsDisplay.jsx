@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getResults, resetVotes } from '../utils/api';
+import { getResults } from '../utils/api';
 
 const BASE_W = 1280;
 const BASE_H = 720;
@@ -55,23 +55,7 @@ export default function ResultsDisplay({ width, height }) {
   const [ready, setReady] = useState(false);
   const [burst, setBurst] = useState({ red: false, white: false });
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [showReset, setShowReset] = useState(false);
-  const [password, setPassword] = useState('');
-  const [resetMsg, setResetMsg] = useState('');
   const prevRef = useRef({ red: 0, white: 0 });
-
-  async function handleReset() {
-    const result = await resetVotes(password);
-    if (result.success) {
-      setResults({ red: 0, white: 0, total: 0 });
-      prevRef.current = { red: 0, white: 0 };
-      setResetMsg('✓ 已重置');
-      setTimeout(() => { setShowReset(false); setPassword(''); setResetMsg(''); }, 1500);
-    } else {
-      setResetMsg('✗ 密碼錯誤');
-      setTimeout(() => setResetMsg(''), 1500);
-    }
-  }
 
   const w = width ?? window.innerWidth;
   const h = height ?? window.innerHeight;
@@ -124,42 +108,6 @@ export default function ResultsDisplay({ width, height }) {
             {lastUpdated && <span style={{ marginLeft: 24 }}>最後更新 {lastUpdated}</span>}
           </div>
 
-          {/* Reset 按鈕 */}
-          <div style={{ position: 'absolute', top: 0, right: 0 }}>
-            {!showReset ? (
-              <button
-                onClick={() => setShowReset(true)}
-                style={{ fontFamily: 'monospace', fontSize: 11, background: 'transparent', border: '1px solid #333', color: '#444', padding: '4px 10px', cursor: 'pointer', letterSpacing: 1 }}
-              >
-                RESET
-              </button>
-            ) : (
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <input
-                  type="password"
-                  placeholder="密碼"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleReset()}
-                  autoFocus
-                  style={{ fontFamily: 'monospace', fontSize: 12, background: '#111', border: '1px solid #555', color: '#fff', padding: '4px 8px', width: 90 }}
-                />
-                <button
-                  onClick={handleReset}
-                  style={{ fontFamily: 'monospace', fontSize: 11, background: '#e63946', border: 'none', color: '#fff', padding: '4px 10px', cursor: 'pointer' }}
-                >
-                  確認
-                </button>
-                <button
-                  onClick={() => { setShowReset(false); setPassword(''); setResetMsg(''); }}
-                  style={{ fontFamily: 'monospace', fontSize: 11, background: 'transparent', border: '1px solid #333', color: '#555', padding: '4px 8px', cursor: 'pointer' }}
-                >
-                  取消
-                </button>
-                {resetMsg && <span style={{ fontFamily: 'monospace', fontSize: 12, color: resetMsg.startsWith('✓') ? '#4caf50' : '#e63946' }}>{resetMsg}</span>}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Bars */}
