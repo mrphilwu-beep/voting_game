@@ -28,11 +28,10 @@ export default function AdminPanel() {
     } catch {}
   }
 
-  async function handleReset() {
-    if (!password) return;
+  async function doResetWithPassword(pw) {
     setResetting(true);
     try {
-      const result = await resetVotes(password);
+      const result = await resetVotes(pw);
       if (result.success) {
         setResults({ red: 0, white: 0, total: 0 });
         setPassword('');
@@ -50,6 +49,11 @@ export default function AdminPanel() {
       setResetMsg('✗ 連線失敗');
     }
     setResetting(false);
+  }
+
+  async function handleReset() {
+    if (!password) return;
+    await doResetWithPassword(password);
     setTimeout(() => setResetMsg(''), 3000);
   }
 
@@ -121,6 +125,31 @@ export default function AdminPanel() {
               {resetting ? '處理中...' : 'RESET'}
             </button>
           </div>
+          {resetMsg && (
+            <div style={{ marginTop: 12, fontSize: 12, color: resetMsg.startsWith('✓') ? '#4caf50' : '#e63946' }}>
+              {resetMsg}
+            </div>
+          )}
+        </div>
+
+        {/* 重新投票 */}
+        <div className="pixel-box" style={{ padding: 24, marginTop: 24 }}>
+          <div style={{ color: '#ffd700', fontSize: 11, letterSpacing: 3, marginBottom: 20 }}>重新投票</div>
+          <div style={{ color: '#888', fontSize: 11, marginBottom: 16 }}>
+            清除所有投票記錄，重新開始。需輸入密碼確認。
+          </div>
+          <button
+            className="btn-pixel btn-red"
+            style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4 }}
+            disabled={resetting}
+            onClick={async () => {
+              const pw = window.prompt('請輸入密碼以確認重新投票：');
+              if (!pw) return;
+              await doResetWithPassword(pw);
+            }}
+          >
+            🔄 重新投票
+          </button>
           {resetMsg && (
             <div style={{ marginTop: 12, fontSize: 12, color: resetMsg.startsWith('✓') ? '#4caf50' : '#e63946' }}>
               {resetMsg}
