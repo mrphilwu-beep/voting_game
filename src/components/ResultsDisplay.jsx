@@ -59,30 +59,23 @@ export default function ResultsDisplay({ width, height }) {
   const [lotteryCount, setLotteryCount] = useState(null);
   const prevRef = useRef({ red: 0, white: 0 });
 
-  // 偵測後台觸發抽獎
+  // 頁面載入時，若已在抽獎模式則直接進入
   useEffect(() => {
-    // 頁面載入時，若已在抽獎模式則直接進入
     if (localStorage.getItem('lottery_mode') === '1') {
       setLotteryCount(1);
-      return;
     }
-    function checkLottery() {
-      const val = localStorage.getItem('lottery_trigger');
-      if (val) {
+    // 清除任何殘留的 reset_trigger
+    localStorage.removeItem('reset_trigger');
+  }, []);
+
+  // 偵測後台觸發抽獎 & reset（合併為一個 listener）
+  useEffect(() => {
+    function handleStorage(e) {
+      if (e.key === 'lottery_trigger') {
         localStorage.removeItem('lottery_trigger');
         setLotteryCount(1);
       }
-    }
-    checkLottery();
-    window.addEventListener('storage', checkLottery);
-    return () => window.removeEventListener('storage', checkLottery);
-  }, []);
-
-  // 偵測後台 reset
-  useEffect(() => {
-    function checkReset() {
-      const val = localStorage.getItem('reset_trigger');
-      if (val) {
+      if (e.key === 'reset_trigger') {
         localStorage.removeItem('reset_trigger');
         setLotteryCount(null);
         setResults({ red: 0, white: 0, total: 0 });
@@ -90,8 +83,8 @@ export default function ResultsDisplay({ width, height }) {
         prevRef.current = { red: 0, white: 0 };
       }
     }
-    window.addEventListener('storage', checkReset);
-    return () => window.removeEventListener('storage', checkReset);
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const w = width ?? window.innerWidth;
