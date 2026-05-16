@@ -78,10 +78,11 @@ export default function ResultsDisplay({ width, height }) {
   const scale = Math.min(w / BASE_W, h / BASE_H);
 
   useEffect(() => {
+    if (lotteryCount !== null) return;
     doFetch();
     const id = setInterval(doFetch, 4000);
     return () => clearInterval(id);
-  }, []);
+  }, [lotteryCount]);
 
   async function doFetch() {
     try {
@@ -104,7 +105,7 @@ export default function ResultsDisplay({ width, height }) {
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#03030a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="stars-bg" />
       {lotteryCount !== null && (
-        <LotteryScreen onClose={() => setLotteryCount(null)} />
+        <LotteryScreen onClose={() => {}} />
       )}
       <div style={{
         width: BASE_W, height: BASE_H,

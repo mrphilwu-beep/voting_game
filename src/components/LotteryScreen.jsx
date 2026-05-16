@@ -28,7 +28,7 @@ function SlotCell({ value, locked, winnerColor }) {
   );
 }
 
-export default function LotteryScreen({ onClose }) {
+export default function LotteryScreen() {
   const [phase, setPhase] = useState('loading'); // loading | ready | spinning | show-winner
   const [voters, setVoters] = useState([]);
   const [winners, setWinners] = useState([]); // 累積得獎名單
@@ -220,12 +220,6 @@ export default function LotteryScreen({ onClose }) {
         )}
       </div>
 
-      <button
-        onClick={onClose}
-        style={{ position: 'fixed', top: 24, right: 24, fontFamily: 'monospace', fontSize: 11, background: 'transparent', border: '1px solid #333', color: '#555', padding: '6px 14px', cursor: 'pointer', zIndex: 101 }}
-      >
-        ✕ 關閉
-      </button>
     </div>
   );
 }
