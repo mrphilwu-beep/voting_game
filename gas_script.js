@@ -9,6 +9,7 @@ function doGet(e) {
   if (action === 'validateId') return respond(validateId(e.parameter.id));
   if (action === 'getResults') return respond(getResults(Number(e.parameter.level)));
   if (action === 'resetVotes') return respond(resetVotesRemote(e.parameter.password));
+  if (action === 'getVoters') return respond(getVoters());
   return respond({ error: 'unknown action' });
 }
 
@@ -115,6 +116,16 @@ function resetVotes() {
     range.clearContent();
     range.setBackground(null);
   }
+}
+
+// ── getVoters ─────────────────────────────────────────────────
+function getVoters() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const voteSheet = getOrCreateVoteSheet(ss);
+  if (voteSheet.getLastRow() < 2) return { voters: [] };
+  const rows = voteSheet.getRange(2, 1, voteSheet.getLastRow() - 1, 2).getValues();
+  const voters = rows.map(([id, choice]) => ({ id: String(id).toUpperCase(), choice }));
+  return { voters };
 }
 
 // ── getResults ────────────────────────────────────────────────

@@ -49,6 +49,15 @@ export async function getResults(level) {
   return data;
 }
 
+export async function getVoters() {
+  if (USE_MOCK) {
+    await delay(300);
+    return { voters: ['A3K7','B9MQ','C4NP','D2RV','E8TW','F5XY','G6ZJ','H7KL','TEST','DEMO'].map(id => ({ id, choice: Math.random() > 0.5 ? 'red' : 'white' })) };
+  }
+  const res = await fetch(`${GAS_URL}?action=getVoters`);
+  return res.json();
+}
+
 export async function resetVotes(password) {
   if (USE_MOCK) {
     await delay(300);

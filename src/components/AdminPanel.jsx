@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getResults, resetVotes } from '../utils/api';
+import LotteryScreen from './LotteryScreen';
 
 export default function AdminPanel() {
   const [results, setResults] = useState({ red: 0, white: 0, total: 0 });
@@ -7,6 +8,8 @@ export default function AdminPanel() {
   const [password, setPassword] = useState('');
   const [resetMsg, setResetMsg] = useState('');
   const [resetting, setResetting] = useState(false);
+  const [lotteryCount, setLotteryCount] = useState(1);
+  const [showLottery, setShowLottery] = useState(false);
 
   useEffect(() => {
     doFetch();
@@ -116,6 +119,33 @@ export default function AdminPanel() {
           )}
         </div>
 
+        {/* 抽獎 */}
+        <div className="pixel-box" style={{ padding: 24, marginTop: 24 }}>
+          <div style={{ color: '#ffd700', fontSize: 11, letterSpacing: 3, marginBottom: 20 }}>幸運抽獎</div>
+          <div style={{ color: '#888', fontSize: 11, marginBottom: 16 }}>
+            從所有投票者中隨機抽出得獎者。
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ color: '#888', fontSize: 12 }}>抽獎人數</div>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={lotteryCount}
+              onChange={e => setLotteryCount(Math.max(1, parseInt(e.target.value) || 1))}
+              style={{ width: 64, fontFamily: 'monospace', fontSize: 13, background: '#0a0a1a', border: '2px solid #333', color: '#fff', padding: '8px 10px', textAlign: 'center' }}
+            />
+            <div style={{ color: '#555', fontSize: 11 }}>人</div>
+          </div>
+          <button
+            className="btn-pixel btn-gold"
+            style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
+            onClick={() => setShowLottery(true)}
+          >
+            🎰 開始抽獎
+          </button>
+        </div>
+
         {/* 連結 */}
         <div style={{ marginTop: 32, color: '#333', fontSize: 11, textAlign: 'center', lineHeight: 2 }}>
           <a href="/" style={{ color: '#555', textDecoration: 'none' }}>投票遊戲</a>
@@ -123,6 +153,10 @@ export default function AdminPanel() {
           <a href="/results" style={{ color: '#555', textDecoration: 'none' }}>投票結果</a>
         </div>
       </div>
+
+      {showLottery && (
+        <LotteryScreen count={lotteryCount} onClose={() => setShowLottery(false)} />
+      )}
     </div>
   );
 }
