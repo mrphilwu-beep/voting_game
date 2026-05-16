@@ -103,8 +103,8 @@ export default function AdminPanel() {
           </div>
           <button
             className="btn-pixel btn-red"
-            style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4 }}
-            disabled={resetting}
+            style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4, opacity: results.total === 0 ? 0.4 : 1 }}
+            disabled={resetting || results.total === 0}
             onClick={async () => {
               const pw = window.prompt('請輸入密碼以確認重新投票：');
               if (!pw) return;
