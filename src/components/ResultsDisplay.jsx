@@ -73,6 +73,21 @@ export default function ResultsDisplay({ width, height }) {
     return () => window.removeEventListener('storage', checkLottery);
   }, []);
 
+  // 偵測後台 reset
+  useEffect(() => {
+    function checkReset() {
+      const val = localStorage.getItem('reset_trigger');
+      if (val) {
+        setLotteryCount(null);
+        setResults({ red: 0, white: 0, total: 0 });
+        setReady(false);
+        prevRef.current = { red: 0, white: 0 };
+      }
+    }
+    window.addEventListener('storage', checkReset);
+    return () => window.removeEventListener('storage', checkReset);
+  }, []);
+
   const w = width ?? window.innerWidth;
   const h = height ?? window.innerHeight;
   const scale = Math.min(w / BASE_W, h / BASE_H);

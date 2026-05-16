@@ -40,6 +40,7 @@ export default function AdminPanel() {
         localStorage.removeItem('lottery_mode');
         localStorage.removeItem('lottery_winners');
         localStorage.removeItem('voting_ended');
+        localStorage.setItem('reset_trigger', Date.now().toString());
         setLotteryReady(false);
         setVotingEnded(false);
       } else {
