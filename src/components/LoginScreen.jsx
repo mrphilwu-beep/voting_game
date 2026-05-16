@@ -61,7 +61,7 @@ export default function LoginScreen({ onLogin, lang, onLangChange }) {
 
       {/* Title */}
       <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-        <div style={{ fontSize: 9, color: '#888', letterSpacing: 3, marginBottom: 10 }}>{t.festival}</div>
+        <div style={{ fontSize: 28, color: '#ffd700', letterSpacing: 4, marginBottom: 10, fontFamily: 'monospace', textShadow: '0 0 20px #ffd70088' }}>{t.festival}</div>
         <h1 className="title-glow" style={{ fontSize: 16, lineHeight: 1.8, whiteSpace: 'pre-line' }}>
           {t.title}
         </h1>
