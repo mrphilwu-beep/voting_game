@@ -130,8 +130,8 @@ export default function AdminPanel() {
             className="btn-pixel btn-gold"
             style={{ fontSize: 13, padding: '12px 32px', width: '100%', marginBottom: lotteryReady ? 12 : 0 }}
             disabled={votingEnded}
-            onClick={async () => {
-              await endVoting();
+            onClick={() => {
+              // 先更新狀態與開視窗（避免瀏覽器封鎖 popup）
               localStorage.setItem('voting_ended', '1');
               localStorage.setItem('lottery_trigger', Date.now().toString());
               localStorage.setItem('lottery_mode', '1');
@@ -139,6 +139,8 @@ export default function AdminPanel() {
               window.open('/results', '_blank');
               setVotingEnded(true);
               setLotteryReady(true);
+              // 背後呼叫 GAS 設定結束旗標
+              endVoting().catch(() => {});
             }}
           >
             {votingEnded ? '✓ 已結束投票' : '🔒 結束投票'}
