@@ -8,6 +8,7 @@ export default function AdminPanel() {
   const [resetMsg, setResetMsg] = useState('');
   const [resetting, setResetting] = useState(false);
   const [lotteryCount, setLotteryCount] = useState(1);
+  const [lotteryReady, setLotteryReady] = useState(false);
 
   useEffect(() => {
     doFetch();
@@ -137,14 +138,26 @@ export default function AdminPanel() {
           </div>
           <button
             className="btn-pixel btn-gold"
-            style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
+            style={{ fontSize: 13, padding: '12px 32px', width: '100%', marginBottom: lotteryReady ? 12 : 0 }}
             onClick={() => {
               localStorage.setItem('lottery_trigger', String(lotteryCount));
               window.open('/results', '_blank');
+              setLotteryReady(true);
             }}
           >
-            🎰 開始抽獎
+            🎰 進入抽獎畫面
           </button>
+          {lotteryReady && (
+            <button
+              className="btn-pixel btn-red"
+              style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4 }}
+              onClick={() => {
+                localStorage.setItem('lottery_start', '1');
+              }}
+            >
+              ▶ 啟動抽獎
+            </button>
+          )}
         </div>
 
         {/* 連結 */}

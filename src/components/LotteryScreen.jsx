@@ -14,6 +14,19 @@ export default function LotteryScreen({ count, onClose }) {
     loadVoters();
   }, []);
 
+  // 偵測後台按下啟動
+  useEffect(() => {
+    function checkStart() {
+      const val = localStorage.getItem('lottery_start');
+      if (val) {
+        localStorage.removeItem('lottery_start');
+        if (phase === 'ready') startDraw();
+      }
+    }
+    window.addEventListener('storage', checkStart);
+    return () => window.removeEventListener('storage', checkStart);
+  }, [phase, voters]);
+
   async function loadVoters() {
     try {
       const data = await getVoters();
@@ -121,13 +134,15 @@ export default function LotteryScreen({ count, onClose }) {
             {error ? (
               <div style={{ color: '#e63946', fontSize: 14, marginBottom: 32 }}>{error}</div>
             ) : (
-              <div style={{ color: '#888', fontSize: 13, marginBottom: 32, letterSpacing: 2 }}>
-                共 <span style={{ color: '#fff' }}>{voters.length}</span> 人參與，抽出 <span style={{ color: '#ffd700' }}>{Math.min(count, voters.length)}</span> 名得獎者
-              </div>
+              <>
+                <div style={{ color: '#888', fontSize: 13, marginBottom: 32, letterSpacing: 2 }}>
+                  共 <span style={{ color: '#fff' }}>{voters.length}</span> 人參與，抽出 <span style={{ color: '#ffd700' }}>{Math.min(count, voters.length)}</span> 名得獎者
+                </div>
+                <div style={{ color: '#ffd700', fontSize: 13, letterSpacing: 4 }} className="blink">
+                  等待後台啟動...
+                </div>
+              </>
             )}
-            <button className="btn-pixel btn-gold" style={{ fontSize: 16, padding: '16px 48px', letterSpacing: 4 }} onClick={startDraw} disabled={!!error}>
-              ▶ 開始抽獎
-            </button>
           </>
         )}
 
