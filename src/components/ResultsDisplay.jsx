@@ -59,9 +59,9 @@ export default function ResultsDisplay({ width, height }) {
   const [lotteryCount, setLotteryCount] = useState(null);
   const prevRef = useRef({ red: 0, white: 0 });
 
-  // 頁面載入時，若已在抽獎模式則直接進入
+  // 頁面載入時，若已在抽獎模式且投票已結束則直接進入
   useEffect(() => {
-    if (localStorage.getItem('lottery_mode') === '1') {
+    if (localStorage.getItem('lottery_mode') === '1' && localStorage.getItem('voting_ended') === '1') {
       setLotteryCount(1);
     }
     // 清除任何殘留的 reset_trigger
