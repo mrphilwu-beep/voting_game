@@ -129,27 +129,17 @@ export default function LotteryScreen({ count, onClose }) {
           <div style={{ color: '#555', fontSize: 16, letterSpacing: 4 }}>載入中...</div>
         )}
 
-        {phase === 'ready' && (
-          <>
-            {error ? (
-              <div style={{ color: '#e63946', fontSize: 14, marginBottom: 32 }}>{error}</div>
-            ) : (
-              <>
-                <div style={{ color: '#888', fontSize: 13, marginBottom: 32, letterSpacing: 2 }}>
-                  共 <span style={{ color: '#fff' }}>{voters.length}</span> 人參與，抽出 <span style={{ color: '#ffd700' }}>{Math.min(count, voters.length)}</span> 名得獎者
-                </div>
-                <div style={{ color: '#ffd700', fontSize: 13, letterSpacing: 4 }} className="blink">
-                  等待後台啟動...
-                </div>
-              </>
-            )}
-          </>
+        {phase === 'ready' && error && (
+          <div style={{ color: '#e63946', fontSize: 14, marginBottom: 32 }}>{error}</div>
         )}
 
-        {(phase === 'spinning' || phase === 'show-winner') && (
+        {(phase === 'ready' || phase === 'spinning' || phase === 'show-winner') && !error && (
           <>
             <div style={{ color: '#555', fontSize: 12, letterSpacing: 3, marginBottom: 16 }}>
-              第 {currentWinnerIdx + 1} / {winners.length} 名
+              {phase === 'ready'
+                ? <>共 <span style={{ color: '#fff' }}>{voters.length}</span> 人參與，抽出 <span style={{ color: '#ffd700' }}>{Math.min(count, voters.length)}</span> 名得獎者</>
+                : <>第 {currentWinnerIdx + 1} / {winners.length} 名</>
+              }
             </div>
 
             {/* 拉霸槽 */}
@@ -172,6 +162,12 @@ export default function LotteryScreen({ count, onClose }) {
                 {displayId}
               </div>
             </div>
+
+            {phase === 'ready' && (
+              <div style={{ color: '#ffd700', fontSize: 13, letterSpacing: 4 }} className="blink">
+                等待後台啟動...
+              </div>
+            )}
 
             {phase === 'show-winner' && (
               <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
