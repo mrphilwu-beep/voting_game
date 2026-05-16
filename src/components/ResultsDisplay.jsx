@@ -59,23 +59,20 @@ export default function ResultsDisplay({ width, height }) {
   const [lotteryCount, setLotteryCount] = useState(null);
   const prevRef = useRef({ red: 0, white: 0 });
 
-  // 頁面載入時，向伺服器確認投票狀態再決定是否進入抽獎模式
+  // 頁面載入時，若 lottery_mode 存在則立即進入抽獎，再向伺服器確認
   useEffect(() => {
     localStorage.removeItem('reset_trigger');
     if (localStorage.getItem('lottery_mode') !== '1') return;
+    // 先進入抽獎畫面
+    setLotteryCount(1);
+    // 背後確認伺服器：若已 reset 則退出
     getStatus().then(({ votingEnded }) => {
-      if (votingEnded) {
-        setLotteryCount(1);
-      } else {
-        // 伺服器已 reset，清除殘留的本地旗標
+      if (!votingEnded) {
+        setLotteryCount(null);
         localStorage.removeItem('lottery_mode');
         localStorage.removeItem('voting_ended');
       }
-    }).catch(() => {
-      // 無法連線時，保守地不進入抽獎模式
-      localStorage.removeItem('lottery_mode');
-      localStorage.removeItem('voting_ended');
-    });
+    }).catch(() => {});
   }, []);
 
   // 偵測後台觸發抽獎 & reset（合併為一個 listener）
