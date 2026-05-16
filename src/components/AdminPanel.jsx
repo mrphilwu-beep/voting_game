@@ -7,7 +7,9 @@ export default function AdminPanel() {
   const [password, setPassword] = useState('');
   const [resetMsg, setResetMsg] = useState('');
   const [resetting, setResetting] = useState(false);
-  const [lotteryReady, setLotteryReady] = useState(false);
+  const [lotteryReady, setLotteryReady] = useState(
+    () => localStorage.getItem('lottery_mode') === '1'
+  );
 
   useEffect(() => {
     doFetch();
@@ -32,6 +34,9 @@ export default function AdminPanel() {
         setResults({ red: 0, white: 0, total: 0 });
         setPassword('');
         setResetMsg('✓ 投票已重置');
+        localStorage.removeItem('lottery_mode');
+        localStorage.removeItem('lottery_winners');
+        setLotteryReady(false);
       } else {
         setResetMsg('✗ 密碼錯誤');
       }
@@ -128,6 +133,7 @@ export default function AdminPanel() {
             style={{ fontSize: 13, padding: '12px 32px', width: '100%', marginBottom: lotteryReady ? 12 : 0 }}
             onClick={() => {
               localStorage.setItem('lottery_trigger', '1');
+              localStorage.setItem('lottery_mode', '1');
               localStorage.removeItem('lottery_winners');
               window.open('/results', '_blank');
               setLotteryReady(true);
