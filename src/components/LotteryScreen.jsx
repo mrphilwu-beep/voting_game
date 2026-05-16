@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getVoters } from '../utils/api';
+import { getVoters, recordWinner } from '../utils/api';
 
 const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
 function randomChar() {
@@ -118,11 +118,11 @@ export default function LotteryScreen({ onClose }) {
         setLockedCount(colIdx + 1);
 
         if (colIdx === 3) {
-          // 記錄已中獎
           const wonIds = JSON.parse(localStorage.getItem('lottery_winners') || '[]');
           wonIds.push(winner.id);
           localStorage.setItem('lottery_winners', JSON.stringify(wonIds));
           setWinners(prev => [...prev, winner]);
+          recordWinner(winner.id, winner.choice);
           setTimeout(() => setPhase('show-winner'), 400);
         }
       }, delay);

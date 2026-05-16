@@ -18,6 +18,7 @@ function doPost(e) {
     const body = JSON.parse(e.postData.contents);
     if (body.action === 'submitVote') return respond(submitVote(body.id, body.choice, body.level));
     if (body.action === 'resetVotes') return respond(resetVotesRemote(body.password));
+    if (body.action === 'recordWinner') return respond(recordWinner(body.id, body.choice));
     return respond({ error: 'unknown action' });
   } catch (err) {
     return respond({ error: err.message });
@@ -116,6 +117,19 @@ function resetVotes() {
     range.clearContent();
     range.setBackground(null);
   }
+}
+
+// ── recordWinner ──────────────────────────────────────────────
+function recordWinner(id, choice) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName('Winners');
+  if (!sheet) {
+    sheet = ss.insertSheet('Winners');
+    sheet.appendRow(['ID', 'Choice', 'Timestamp']);
+  }
+  sheet.appendRow([id.toUpperCase(), choice, new Date().toISOString()]);
+  sheet.getRange(sheet.getLastRow(), 1, 1, 2).setBackground('#fff2cc');
+  return { success: true };
 }
 
 // ── getVoters ─────────────────────────────────────────────────

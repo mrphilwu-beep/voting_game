@@ -49,6 +49,16 @@ export async function getResults(level) {
   return data;
 }
 
+export async function recordWinner(id, choice) {
+  if (USE_MOCK) { await delay(200); return { success: true }; }
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'recordWinner', id, choice }),
+  });
+  return res.json();
+}
+
 export async function getVoters() {
   if (USE_MOCK) {
     await delay(300);
