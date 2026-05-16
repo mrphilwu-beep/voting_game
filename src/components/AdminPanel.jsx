@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getResults, resetVotes } from '../utils/api';
+import { getResults, resetVotes, endVoting } from '../utils/api';
 
 export default function AdminPanel() {
   const [results, setResults] = useState({ red: 0, white: 0, total: 0 });
@@ -131,7 +131,8 @@ export default function AdminPanel() {
           <button
             className="btn-pixel btn-gold"
             style={{ fontSize: 13, padding: '12px 32px', width: '100%', marginBottom: lotteryReady ? 12 : 0 }}
-            onClick={() => {
+            onClick={async () => {
+              await endVoting();
               localStorage.setItem('lottery_trigger', '1');
               localStorage.setItem('lottery_mode', '1');
               localStorage.removeItem('lottery_winners');
@@ -139,7 +140,7 @@ export default function AdminPanel() {
               setLotteryReady(true);
             }}
           >
-            🎰 進入抽獎畫面
+            🔒 結束投票
           </button>
           {lotteryReady && (
             <button

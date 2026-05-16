@@ -49,6 +49,18 @@ export async function getResults(level) {
   return data;
 }
 
+export async function endVoting() {
+  if (USE_MOCK) { await delay(200); return { success: true }; }
+  const res = await fetch(`${GAS_URL}?action=endVoting`);
+  return res.json();
+}
+
+export async function getStatus() {
+  if (USE_MOCK) { await delay(100); return { votingEnded: false }; }
+  const res = await fetch(`${GAS_URL}?action=getStatus`);
+  return res.json();
+}
+
 export async function recordWinner(id, choice) {
   if (USE_MOCK) { await delay(200); return { success: true }; }
   const res = await fetch(GAS_URL, {

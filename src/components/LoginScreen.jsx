@@ -20,6 +20,8 @@ export default function LoginScreen({ onLogin, lang, onLangChange }) {
       const res = await validateId(id.toUpperCase());
       if (res.valid) {
         onLogin(id.toUpperCase());
+      } else if (res.reason === 'voting ended') {
+        setError(t.errVotingEnded || '投票已結束，感謝參與！');
       } else if (res.reason === 'already voted') {
         setAlreadyVoted(true);
         setError(t.errVoted);

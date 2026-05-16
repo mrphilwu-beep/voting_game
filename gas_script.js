@@ -10,6 +10,8 @@ function doGet(e) {
   if (action === 'getResults') return respond(getResults(Number(e.parameter.level)));
   if (action === 'resetVotes') return respond(resetVotesRemote(e.parameter.password));
   if (action === 'getVoters') return respond(getVoters());
+  if (action === 'endVoting') return respond(setVotingEnded(true));
+  if (action === 'getStatus') return respond(getStatus());
   return respond({ error: 'unknown action' });
 }
 
@@ -25,10 +27,46 @@ function doPost(e) {
   }
 }
 
+// ── voting status ─────────────────────────────────────────────
+function getSettingsSheet(ss) {
+  let sheet = ss.getSheetByName('Settings');
+  if (!sheet) {
+    sheet = ss.insertSheet('Settings');
+    sheet.appendRow(['Key', 'Value']);
+    sheet.appendRow(['voting_ended', 'false']);
+  }
+  return sheet;
+}
+
+function getStatus() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = getSettingsSheet(ss);
+  const rows = sheet.getDataRange().getValues();
+  for (const [key, value] of rows) {
+    if (key === 'voting_ended') return { votingEnded: value === 'true' };
+  }
+  return { votingEnded: false };
+}
+
+function setVotingEnded(ended) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = getSettingsSheet(ss);
+  const rows = sheet.getDataRange().getValues();
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i][0] === 'voting_ended') {
+      sheet.getRange(i + 1, 2).setValue(ended ? 'true' : 'false');
+      return { success: true };
+    }
+  }
+  sheet.appendRow(['voting_ended', ended ? 'true' : 'false']);
+  return { success: true };
+}
+
 // ── validateId ────────────────────────────────────────────────
 function validateId(id) {
   if (!id) return { valid: false };
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (getStatus().votingEnded) return { valid: false, reason: 'voting ended' };
   const idSheet = ss.getSheetByName('ID');
   if (!idSheet) return { valid: false, reason: 'ID sheet not found' };
 
@@ -117,6 +155,8 @@ function resetVotes() {
     range.clearContent();
     range.setBackground(null);
   }
+  // 重置投票結束旗標
+  setVotingEnded(false);
 }
 
 // ── recordWinner ──────────────────────────────────────────────
