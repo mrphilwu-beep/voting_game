@@ -177,13 +177,9 @@ export default function LotteryScreen({ count, onClose }) {
                 <div style={{ color: winnerColor, fontSize: 13, letterSpacing: 2 }}>
                   {winners[currentWinnerIdx]?.choice === 'red' ? '🔴 紅湯支持者' : '⚪ 白湯支持者'}
                 </div>
-                {currentWinnerIdx < winners.length - 1 ? (
+                {currentWinnerIdx < winners.length - 1 && (
                   <button className="btn-pixel btn-gold" style={{ fontSize: 13, padding: '12px 32px', marginTop: 8 }} onClick={nextWinner}>
                     ▶ 下一位
-                  </button>
-                ) : (
-                  <button className="btn-pixel btn-gold" style={{ fontSize: 13, padding: '12px 32px', marginTop: 8 }} onClick={() => setPhase('done')}>
-                    完成
                   </button>
                 )}
               </div>
