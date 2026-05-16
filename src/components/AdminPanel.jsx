@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { getResults, resetVotes } from '../utils/api';
-import LotteryScreen from './LotteryScreen';
 
 export default function AdminPanel() {
   const [results, setResults] = useState({ red: 0, white: 0, total: 0 });
@@ -9,7 +8,6 @@ export default function AdminPanel() {
   const [resetMsg, setResetMsg] = useState('');
   const [resetting, setResetting] = useState(false);
   const [lotteryCount, setLotteryCount] = useState(1);
-  const [showLottery, setShowLottery] = useState(false);
 
   useEffect(() => {
     doFetch();
@@ -140,7 +138,10 @@ export default function AdminPanel() {
           <button
             className="btn-pixel btn-gold"
             style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
-            onClick={() => setShowLottery(true)}
+            onClick={() => {
+              localStorage.setItem('lottery_trigger', String(lotteryCount));
+              window.open('/results', '_blank');
+            }}
           >
             🎰 開始抽獎
           </button>
@@ -154,9 +155,6 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {showLottery && (
-        <LotteryScreen count={lotteryCount} onClose={() => setShowLottery(false)} />
-      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getResults } from '../utils/api';
+import LotteryScreen from './LotteryScreen';
 
 const BASE_W = 1280;
 const BASE_H = 720;
@@ -55,7 +56,22 @@ export default function ResultsDisplay({ width, height }) {
   const [ready, setReady] = useState(false);
   const [burst, setBurst] = useState({ red: false, white: false });
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [lotteryCount, setLotteryCount] = useState(null);
   const prevRef = useRef({ red: 0, white: 0 });
+
+  // 偵測後台觸發抽獎
+  useEffect(() => {
+    function checkLottery() {
+      const val = localStorage.getItem('lottery_trigger');
+      if (val) {
+        localStorage.removeItem('lottery_trigger');
+        setLotteryCount(parseInt(val) || 1);
+      }
+    }
+    checkLottery();
+    window.addEventListener('storage', checkLottery);
+    return () => window.removeEventListener('storage', checkLottery);
+  }, []);
 
   const w = width ?? window.innerWidth;
   const h = height ?? window.innerHeight;
@@ -87,6 +103,9 @@ export default function ResultsDisplay({ width, height }) {
   return (
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#03030a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="stars-bg" />
+      {lotteryCount !== null && (
+        <LotteryScreen count={lotteryCount} onClose={() => setLotteryCount(null)} />
+      )}
       <div style={{
         width: BASE_W, height: BASE_H,
         transformOrigin: 'center center',
