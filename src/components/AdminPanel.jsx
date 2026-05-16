@@ -10,6 +10,9 @@ export default function AdminPanel() {
   const [lotteryReady, setLotteryReady] = useState(
     () => localStorage.getItem('lottery_mode') === '1'
   );
+  const [votingEnded, setVotingEnded] = useState(
+    () => localStorage.getItem('voting_ended') === '1'
+  );
 
   useEffect(() => {
     doFetch();
@@ -36,7 +39,9 @@ export default function AdminPanel() {
         setResetMsg('✓ 投票已重置');
         localStorage.removeItem('lottery_mode');
         localStorage.removeItem('lottery_winners');
+        localStorage.removeItem('voting_ended');
         setLotteryReady(false);
+        setVotingEnded(false);
       } else {
         setResetMsg('✗ 密碼錯誤');
       }
@@ -131,16 +136,19 @@ export default function AdminPanel() {
           <button
             className="btn-pixel btn-gold"
             style={{ fontSize: 13, padding: '12px 32px', width: '100%', marginBottom: lotteryReady ? 12 : 0 }}
+            disabled={votingEnded}
             onClick={async () => {
               await endVoting();
+              localStorage.setItem('voting_ended', '1');
               localStorage.setItem('lottery_trigger', '1');
               localStorage.setItem('lottery_mode', '1');
               localStorage.removeItem('lottery_winners');
               window.open('/results', '_blank');
+              setVotingEnded(true);
               setLotteryReady(true);
             }}
           >
-            🔒 結束投票
+            {votingEnded ? '✓ 已結束投票' : '🔒 結束投票'}
           </button>
           {lotteryReady && (
             <button
