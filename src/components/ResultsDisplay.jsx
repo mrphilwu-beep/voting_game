@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getResults } from '../utils/api';
+import { getResults, getStatus } from '../utils/api';
 import LotteryScreen from './LotteryScreen';
 
 const BASE_W = 1280;
@@ -59,13 +59,23 @@ export default function ResultsDisplay({ width, height }) {
   const [lotteryCount, setLotteryCount] = useState(null);
   const prevRef = useRef({ red: 0, white: 0 });
 
-  // 頁面載入時，若已在抽獎模式且投票已結束則直接進入
+  // 頁面載入時，向伺服器確認投票狀態再決定是否進入抽獎模式
   useEffect(() => {
-    if (localStorage.getItem('lottery_mode') === '1' && localStorage.getItem('voting_ended') === '1') {
-      setLotteryCount(1);
-    }
-    // 清除任何殘留的 reset_trigger
     localStorage.removeItem('reset_trigger');
+    if (localStorage.getItem('lottery_mode') !== '1') return;
+    getStatus().then(({ votingEnded }) => {
+      if (votingEnded) {
+        setLotteryCount(1);
+      } else {
+        // 伺服器已 reset，清除殘留的本地旗標
+        localStorage.removeItem('lottery_mode');
+        localStorage.removeItem('voting_ended');
+      }
+    }).catch(() => {
+      // 無法連線時，保守地不進入抽獎模式
+      localStorage.removeItem('lottery_mode');
+      localStorage.removeItem('voting_ended');
+    });
   }, []);
 
   // 偵測後台觸發抽獎 & reset（合併為一個 listener）
