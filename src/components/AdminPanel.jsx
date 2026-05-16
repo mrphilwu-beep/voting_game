@@ -141,7 +141,7 @@ export default function AdminPanel() {
             onClick={async () => {
               await endVoting();
               localStorage.setItem('voting_ended', '1');
-              localStorage.setItem('lottery_trigger', '1');
+              localStorage.setItem('lottery_trigger', Date.now().toString());
               localStorage.setItem('lottery_mode', '1');
               localStorage.removeItem('lottery_winners');
               window.open('/results', '_blank');

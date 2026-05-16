@@ -61,11 +61,16 @@ export default function ResultsDisplay({ width, height }) {
 
   // 偵測後台觸發抽獎
   useEffect(() => {
+    // 頁面載入時，若已在抽獎模式則直接進入
+    if (localStorage.getItem('lottery_mode') === '1') {
+      setLotteryCount(1);
+      return;
+    }
     function checkLottery() {
       const val = localStorage.getItem('lottery_trigger');
       if (val) {
         localStorage.removeItem('lottery_trigger');
-        setLotteryCount(parseInt(val) || 1);
+        setLotteryCount(1);
       }
     }
     checkLottery();
