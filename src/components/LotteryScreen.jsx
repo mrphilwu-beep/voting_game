@@ -2,12 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { getVoters } from '../utils/api';
 
 const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
-
 function randomChar() {
   return CHARS[Math.floor(Math.random() * CHARS.length)];
 }
 
-// 單一格子
 function SlotCell({ value, locked, winnerColor }) {
   const color = locked ? (winnerColor || '#ffd700') : '#ffd700';
   return (
@@ -20,7 +18,7 @@ function SlotCell({ value, locked, winnerColor }) {
       transition: 'border-color 0.2s, box-shadow 0.3s',
     }}>
       <span style={{
-        fontSize: 52, color, fontFamily: 'monospace', letterSpacing: 0,
+        fontSize: 52, color, fontFamily: 'monospace',
         textShadow: locked ? `0 0 20px ${color}` : 'none',
         transition: 'color 0.2s',
       }}>
@@ -30,29 +28,33 @@ function SlotCell({ value, locked, winnerColor }) {
   );
 }
 
-export default function LotteryScreen({ count, onClose }) {
-  const [phase, setPhase] = useState('loading');
+export default function LotteryScreen({ onClose }) {
+  const [phase, setPhase] = useState('loading'); // loading | ready | spinning | show-winner
   const [voters, setVoters] = useState([]);
-  const [winners, setWinners] = useState([]);
-  const [currentWinnerIdx, setCurrentWinnerIdx] = useState(0);
+  const [winners, setWinners] = useState([]); // 累積得獎名單
+  const [currentWinner, setCurrentWinner] = useState(null);
   const [cells, setCells] = useState(['?', '?', '?', '?']);
-  const [lockedCount, setLockedCount] = useState(0); // 0~4 已鎖定的格數
+  const [lockedCount, setLockedCount] = useState(0);
   const [error, setError] = useState('');
   const timersRef = useRef([]);
+  const phaseRef = useRef('loading');
+
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   useEffect(() => { loadVoters(); }, []);
 
+  // 偵測後台「抽出一個」
   useEffect(() => {
-    function checkStart() {
-      const val = localStorage.getItem('lottery_start');
-      if (val) {
-        localStorage.removeItem('lottery_start');
-        if (phase === 'ready') startDraw();
+    function checkDraw() {
+      const val = localStorage.getItem('lottery_draw');
+      if (val && (phaseRef.current === 'ready' || phaseRef.current === 'show-winner')) {
+        localStorage.removeItem('lottery_draw');
+        drawOne();
       }
     }
-    window.addEventListener('storage', checkStart);
-    return () => window.removeEventListener('storage', checkStart);
-  }, [phase, voters]);
+    window.addEventListener('storage', checkDraw);
+    return () => window.removeEventListener('storage', checkDraw);
+  }, [voters, winners]);
 
   useEffect(() => {
     return () => timersRef.current.forEach(clearTimeout);
@@ -74,53 +76,38 @@ export default function LotteryScreen({ count, onClose }) {
     }
   }
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
+  function drawOne() {
+    const wonIds = JSON.parse(localStorage.getItem('lottery_winners') || '[]');
+    const pool = voters.filter(v => !wonIds.includes(v.id));
+    if (pool.length === 0) return;
 
-  function startDraw() {
-    if (voters.length === 0) return;
-    const actualCount = Math.min(count, voters.length);
-    const picked = shuffle(voters).slice(0, actualCount);
-    setWinners(picked);
-    setCurrentWinnerIdx(0);
-    setLockedCount(0);
+    const winner = pool[Math.floor(Math.random() * pool.length)];
+    setCurrentWinner(winner);
     setCells(['?', '?', '?', '?']);
+    setLockedCount(0);
     setPhase('spinning');
-    spinOne(picked, 0);
+    spinCells(winner);
   }
 
-  function spinOne(allWinners, idx) {
+  function spinCells(winner) {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
 
-    const winner = allWinners[idx];
     const targetChars = winner.id.split('');
     const locked = [false, false, false, false];
     let currentCells = ['?', '?', '?', '?'];
-
-    // 每個格子的旋轉 ticker
-    const intervals = [null, null, null, null];
-    const speeds = [60, 60, 60, 60];
 
     function tickCell(colIdx) {
       if (locked[colIdx]) return;
       currentCells = [...currentCells];
       currentCells[colIdx] = randomChar();
       setCells([...currentCells]);
-      intervals[colIdx] = setTimeout(() => tickCell(colIdx), speeds[colIdx]);
-      timersRef.current.push(intervals[colIdx]);
+      const t = setTimeout(() => tickCell(colIdx), 60);
+      timersRef.current.push(t);
     }
 
-    // 啟動全部格子
     for (let i = 0; i < 4; i++) tickCell(i);
 
-    // 依序鎖定每個格子
     const lockDelays = [1200, 2000, 2800, 3600];
     lockDelays.forEach((delay, colIdx) => {
       const t = setTimeout(() => {
@@ -130,8 +117,12 @@ export default function LotteryScreen({ count, onClose }) {
         setCells([...currentCells]);
         setLockedCount(colIdx + 1);
 
-        // 最後一格鎖定後進入 show-winner
         if (colIdx === 3) {
+          // 記錄已中獎
+          const wonIds = JSON.parse(localStorage.getItem('lottery_winners') || '[]');
+          wonIds.push(winner.id);
+          localStorage.setItem('lottery_winners', JSON.stringify(wonIds));
+          setWinners(prev => [...prev, winner]);
           setTimeout(() => setPhase('show-winner'), 400);
         }
       }, delay);
@@ -139,17 +130,7 @@ export default function LotteryScreen({ count, onClose }) {
     });
   }
 
-  function nextWinner() {
-    const nextIdx = currentWinnerIdx + 1;
-    setCurrentWinnerIdx(nextIdx);
-    setLockedCount(0);
-    setCells(['?', '?', '?', '?']);
-    setPhase('spinning');
-    spinOne(winners, nextIdx);
-  }
-
-  const winner = winners[currentWinnerIdx];
-  const isRed = phase === 'show-winner' && winner?.choice === 'red';
+  const isRed = currentWinner?.choice === 'red';
   const winnerColor = isRed ? '#e63946' : '#a8dadc';
 
   return (
@@ -180,8 +161,10 @@ export default function LotteryScreen({ count, onClose }) {
           <>
             <div style={{ color: '#555', fontSize: 12, letterSpacing: 3, marginBottom: 24 }}>
               {phase === 'ready'
-                ? <>共 <span style={{ color: '#fff' }}>{voters.length}</span> 人參與，抽出 <span style={{ color: '#ffd700' }}>{Math.min(count, voters.length)}</span> 名得獎者</>
-                : <>第 {currentWinnerIdx + 1} / {winners.length} 名</>
+                ? <>共 <span style={{ color: '#fff' }}>{voters.length}</span> 人參與</>
+                : phase === 'show-winner'
+                ? <>第 <span style={{ color: '#ffd700' }}>{winners.length}</span> 位得獎者</>
+                : <>抽獎中...</>
               }
             </div>
 
@@ -199,39 +182,35 @@ export default function LotteryScreen({ count, onClose }) {
 
             {phase === 'ready' && (
               <div style={{ color: '#ffd700', fontSize: 13, letterSpacing: 4 }} className="blink">
-                等待後台啟動...
+                等待後台抽獎...
               </div>
             )}
 
             {phase === 'show-winner' && (
-              <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+              <div className="pop-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
                 <div style={{ color: winnerColor, fontSize: 20, letterSpacing: 4 }}>🎉 恭喜得獎！</div>
                 <div style={{ color: winnerColor, fontSize: 13, letterSpacing: 2 }}>
-                  {winner?.choice === 'red' ? '🔴 紅湯支持者' : '⚪ 白湯支持者'}
+                  {currentWinner?.choice === 'red' ? '🔴 紅湯支持者' : '⚪ 白湯支持者'}
                 </div>
-                {currentWinnerIdx < winners.length - 1 && (
-                  <button className="btn-pixel btn-gold" style={{ fontSize: 13, padding: '12px 32px', marginTop: 8 }} onClick={nextWinner}>
-                    ▶ 下一位
-                  </button>
-                )}
               </div>
             )}
           </>
         )}
 
-        {phase === 'done' && (
-          <div className="pop-in" style={{ textAlign: 'center' }}>
-            <div style={{ color: '#ffd700', fontSize: 24, letterSpacing: 4, marginBottom: 24 }}>🏆 得獎名單</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
+        {/* 累積得獎名單 */}
+        {winners.length > 0 && (
+          <div style={{ marginTop: 40, minWidth: 340 }}>
+            <div style={{ color: '#555', fontSize: 11, letterSpacing: 3, marginBottom: 12 }}>🏆 得獎名單</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {winners.map((w, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: 16,
                   background: '#0d0d1a', border: `2px solid ${w.choice === 'red' ? '#e63946' : '#a8dadc'}`,
-                  padding: '12px 24px',
+                  padding: '10px 20px',
                 }}>
-                  <span style={{ color: '#555', fontSize: 12 }}>#{i + 1}</span>
-                  <span style={{ color: '#fff', fontSize: 24, letterSpacing: 4, flex: 1 }}>{w.id}</span>
-                  <span style={{ fontSize: 12, color: w.choice === 'red' ? '#e63946' : '#a8dadc' }}>
+                  <span style={{ color: '#555', fontSize: 11 }}>#{i + 1}</span>
+                  <span style={{ color: '#fff', fontSize: 22, letterSpacing: 4, flex: 1 }}>{w.id}</span>
+                  <span style={{ fontSize: 11, color: w.choice === 'red' ? '#e63946' : '#a8dadc' }}>
                     {w.choice === 'red' ? '🔴 紅湯' : '⚪ 白湯'}
                   </span>
                 </div>

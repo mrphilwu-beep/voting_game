@@ -104,7 +104,7 @@ export default function ResultsDisplay({ width, height }) {
     <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#03030a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="stars-bg" />
       {lotteryCount !== null && (
-        <LotteryScreen count={lotteryCount} onClose={() => setLotteryCount(null)} />
+        <LotteryScreen onClose={() => setLotteryCount(null)} />
       )}
       <div style={{
         width: BASE_W, height: BASE_H,
