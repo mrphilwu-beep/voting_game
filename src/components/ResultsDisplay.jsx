@@ -83,6 +83,7 @@ export default function ResultsDisplay({ width, height }) {
     function checkReset() {
       const val = localStorage.getItem('reset_trigger');
       if (val) {
+        localStorage.removeItem('reset_trigger');
         setLotteryCount(null);
         setResults({ red: 0, white: 0, total: 0 });
         setReady(false);
