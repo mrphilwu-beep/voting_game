@@ -132,7 +132,12 @@ export default function AdminPanel() {
                 localStorage.removeItem('lottery_winners');
                 window.open('/results', 'results_window');
                 setVotingEnded(true);
-                await endVoting();
+                try {
+                  const res = await endVoting();
+                  if (!res.success) setResetMsg('⚠️ GAS 結束投票失敗');
+                } catch {
+                  setResetMsg('⚠️ 無法連線 GAS，投票未在伺服器結束');
+                }
               }}
             >
               🔒 結束投票
