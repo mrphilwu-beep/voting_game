@@ -83,7 +83,13 @@ export default function BattleScreen({ userId, lang, onLogout }) {
     setLoading(true);
     setChoice(side);
     try {
-      await submitVote(userId, side, currentLevel.id);
+      const res = await submitVote(userId, side, currentLevel.id);
+      if (res.reason === 'voting ended') {
+        setLoading(false);
+        setChoice(null);
+        onLogout();
+        return;
+      }
       setVoted(true);
       // 立刻樂觀更新，不等伺服器
       setResults(prev => ({ ...prev, [side]: prev[side] + 1, total: prev.total + 1 }));

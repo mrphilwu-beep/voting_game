@@ -1,7 +1,7 @@
 // ============================================================
 // 牛肉麵節投票遊戲 — Google Apps Script 後端
-// 版本：v5  (2026-05-17)
-// 更新：新增 endVoting / getStatus，validateId 檢查投票結束
+// 版本：v6  (2026-05-17)
+// 更新：submitVote 也檢查 votingEnded，防止進入投票畫面後仍能提交
 // 從 Google Sheets「擴充功能 → Apps Script」貼上並部署
 // 部署設定：執行身分「我」、存取「任何人（含匿名）」
 // ============================================================
@@ -92,6 +92,7 @@ function validateId(id) {
 
 // ── submitVote ────────────────────────────────────────────────
 function submitVote(id, choice, level) {
+  if (getStatus().votingEnded) return { success: false, reason: 'voting ended' };
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const voteSheet = getOrCreateVoteSheet(ss);
   voteSheet.appendRow([
