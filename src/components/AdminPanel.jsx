@@ -129,10 +129,6 @@ export default function AdminPanel() {
               style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
               onClick={async () => {
                 localStorage.setItem('voting_ended', '1');
-                localStorage.setItem('lottery_trigger', Date.now().toString());
-                localStorage.setItem('lottery_mode', '1');
-                localStorage.removeItem('lottery_winners');
-                window.open('/results', 'results_window');
                 setVotingEnded(true);
                 try {
                   const res = await endVoting();
@@ -145,15 +141,30 @@ export default function AdminPanel() {
               🔒 結束投票
             </button>
           ) : (
-            <button
-              className="btn-pixel btn-red"
-              style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4 }}
-              onClick={() => {
-                localStorage.setItem('lottery_draw', Date.now().toString());
-              }}
-            >
-              🎲 抽出一個獎
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ color: '#4caf50', fontSize: 11, letterSpacing: 2, textAlign: 'center' }}>✓ 投票已結束</div>
+              <button
+                className="btn-pixel btn-gold"
+                style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
+                onClick={() => {
+                  localStorage.setItem('lottery_trigger', Date.now().toString());
+                  localStorage.setItem('lottery_mode', '1');
+                  localStorage.removeItem('lottery_winners');
+                  window.open('/results', 'results_window');
+                }}
+              >
+                🎰 進入抽獎
+              </button>
+              <button
+                className="btn-pixel btn-red"
+                style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4 }}
+                onClick={() => {
+                  localStorage.setItem('lottery_draw', Date.now().toString());
+                }}
+              >
+                🎲 抽出一個獎
+              </button>
+            </div>
           )}
         </div>
 
