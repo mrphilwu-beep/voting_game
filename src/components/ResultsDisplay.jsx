@@ -143,6 +143,8 @@ export default function ResultsDisplay({ width, height }) {
 
         </div>
 
+        <div style={{ position: 'absolute', bottom: 8, right: 16, fontSize: 10, color: '#222', fontFamily: 'monospace' }}>GAS v6</div>
+
         {/* Bars */}
         <div style={{ flex: 1, display: 'flex', gap: 80, alignItems: 'flex-end', justifyContent: 'center' }}>
           <SideBar count={results.red} side="red" burst={burst.red} ready={ready} />

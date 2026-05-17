@@ -157,10 +157,12 @@ export default function AdminPanel() {
 
         {/* 連結 */}
         <div style={{ marginTop: 32, color: '#333', fontSize: 11, textAlign: 'center', lineHeight: 2 }}>
+
           <a href="/" style={{ color: '#555', textDecoration: 'none' }}>投票遊戲</a>
           {'  ·  '}
           <a href="/results" style={{ color: '#555', textDecoration: 'none' }}>投票結果</a>
         </div>
+        <div style={{ marginTop: 12, color: '#222', fontSize: 10, textAlign: 'center', fontFamily: 'monospace' }}>GAS v6</div>
       </div>
 
     </div>
