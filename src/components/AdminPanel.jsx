@@ -7,9 +7,6 @@ export default function AdminPanel() {
 
   const [resetMsg, setResetMsg] = useState('');
   const [resetting, setResetting] = useState(false);
-  const [lotteryReady, setLotteryReady] = useState(
-    () => localStorage.getItem('lottery_mode') === '1'
-  );
   const [votingEnded, setVotingEnded] = useState(
     () => localStorage.getItem('voting_ended') === '1'
   );
@@ -40,7 +37,6 @@ export default function AdminPanel() {
         localStorage.removeItem('lottery_winners');
         localStorage.removeItem('voting_ended');
         localStorage.setItem('reset_trigger', Date.now().toString());
-        setLotteryReady(false);
         setVotingEnded(false);
       } else {
         setResetMsg('✗ 密碼錯誤');
@@ -126,26 +122,23 @@ export default function AdminPanel() {
           <div style={{ color: '#888', fontSize: 11, marginBottom: 16 }}>
             每按一次抽出一位，已中獎者不重複。
           </div>
-          <button
-            className="btn-pixel btn-gold"
-            style={{ fontSize: 13, padding: '12px 32px', width: '100%', marginBottom: lotteryReady ? 12 : 0 }}
-            disabled={votingEnded}
-            onClick={() => {
-              // 先更新狀態與開視窗（避免瀏覽器封鎖 popup）
-              localStorage.setItem('voting_ended', '1');
-              localStorage.setItem('lottery_trigger', Date.now().toString());
-              localStorage.setItem('lottery_mode', '1');
-              localStorage.removeItem('lottery_winners');
-              window.open('/results', 'results_window');
-              setVotingEnded(true);
-              setLotteryReady(true);
-              // 背後呼叫 GAS 設定結束旗標
-              endVoting().catch(() => {});
-            }}
-          >
-            {votingEnded ? '✓ 已結束投票' : '🔒 結束投票'}
-          </button>
-          {lotteryReady && (
+          {!votingEnded ? (
+            <button
+              className="btn-pixel btn-gold"
+              style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
+              onClick={() => {
+                localStorage.setItem('voting_ended', '1');
+                localStorage.setItem('lottery_trigger', Date.now().toString());
+                localStorage.setItem('lottery_mode', '1');
+                localStorage.removeItem('lottery_winners');
+                window.open('/results', 'results_window');
+                setVotingEnded(true);
+                endVoting().catch(() => {});
+              }}
+            >
+              🔒 結束投票
+            </button>
+          ) : (
             <button
               className="btn-pixel btn-red"
               style={{ fontSize: 14, padding: '14px 32px', width: '100%', letterSpacing: 4 }}
@@ -153,7 +146,7 @@ export default function AdminPanel() {
                 localStorage.setItem('lottery_draw', Date.now().toString());
               }}
             >
-              🎲 抽出一個
+              🎲 抽出一個獎
             </button>
           )}
         </div>
