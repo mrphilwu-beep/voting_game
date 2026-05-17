@@ -136,7 +136,7 @@ export default function AdminPanel() {
               localStorage.setItem('lottery_trigger', Date.now().toString());
               localStorage.setItem('lottery_mode', '1');
               localStorage.removeItem('lottery_winners');
-              window.open('/results', '_blank');
+              window.open('/results', 'results_window');
               setVotingEnded(true);
               setLotteryReady(true);
               // 背後呼叫 GAS 設定結束旗標
