@@ -112,6 +112,7 @@ export default function LoginScreen({ onLogin, lang, onLangChange }) {
       </form>
 
       <div style={{ fontSize: 8, color: '#333', letterSpacing: 1, position: 'relative', zIndex: 1 }}>{t.footer}</div>
+      <div style={{ fontSize: 7, color: '#222', letterSpacing: 1, position: 'relative', zIndex: 1 }}>GAS v6</div>
     </div>
   );
 }
