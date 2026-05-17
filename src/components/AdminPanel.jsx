@@ -125,14 +125,14 @@ export default function AdminPanel() {
             <button
               className="btn-pixel btn-gold"
               style={{ fontSize: 13, padding: '12px 32px', width: '100%' }}
-              onClick={() => {
+              onClick={async () => {
                 localStorage.setItem('voting_ended', '1');
                 localStorage.setItem('lottery_trigger', Date.now().toString());
                 localStorage.setItem('lottery_mode', '1');
                 localStorage.removeItem('lottery_winners');
                 window.open('/results', 'results_window');
                 setVotingEnded(true);
-                endVoting().catch(() => {});
+                await endVoting();
               }}
             >
               🔒 結束投票
