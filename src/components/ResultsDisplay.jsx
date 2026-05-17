@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getResults, getStatus } from '../utils/api';
+import { getResults } from '../utils/api';
 import LotteryScreen from './LotteryScreen';
 
 const BASE_W = 1280;
@@ -59,20 +59,12 @@ export default function ResultsDisplay({ width, height }) {
   const [lotteryCount, setLotteryCount] = useState(null);
   const prevRef = useRef({ red: 0, white: 0 });
 
-  // 頁面載入時，若 lottery_mode 存在則立即進入抽獎，再向伺服器確認
+  // 頁面載入時，若 lottery_mode 存在則直接進入抽獎
   useEffect(() => {
     localStorage.removeItem('reset_trigger');
-    if (localStorage.getItem('lottery_mode') !== '1') return;
-    // 先進入抽獎畫面
-    setLotteryCount(1);
-    // 背後確認伺服器：若已 reset 則退出
-    getStatus().then(({ votingEnded }) => {
-      if (!votingEnded) {
-        setLotteryCount(null);
-        localStorage.removeItem('lottery_mode');
-        localStorage.removeItem('voting_ended');
-      }
-    }).catch(() => {});
+    if (localStorage.getItem('lottery_mode') === '1') {
+      setLotteryCount(1);
+    }
   }, []);
 
   // 偵測後台觸發抽獎 & reset（合併為一個 listener）
