@@ -31,7 +31,6 @@ export default function AdminPanel() {
       const result = await resetVotes(pw);
       if (result.success) {
         setResults({ red: 0, white: 0, total: 0 });
-        setPassword('');
         setResetMsg('✓ 投票已重置');
         localStorage.removeItem('lottery_mode');
         localStorage.removeItem('lottery_winners');
