@@ -162,7 +162,7 @@ export default function AdminPanel() {
           {'  ·  '}
           <a href="/results" style={{ color: '#555', textDecoration: 'none' }}>投票結果</a>
         </div>
-        <div style={{ marginTop: 12, color: '#222', fontSize: 10, textAlign: 'center', fontFamily: 'monospace' }}>GAS v6</div>
+        <div style={{ marginTop: 12, color: '#ffd700', fontSize: 10, textAlign: 'center', fontFamily: 'monospace' }}>GAS v6</div>
       </div>
 
     </div>
