@@ -143,7 +143,7 @@ export default function ResultsDisplay({ width, height }) {
 
         </div>
 
-        <div style={{ position: 'absolute', bottom: 8, right: 16, fontSize: 10, color: '#ffd700', fontFamily: 'monospace' }}>GAS v7</div>
+        <div style={{ position: 'absolute', bottom: 8, right: 16, fontSize: 10, color: '#ffd700', fontFamily: 'monospace' }}>GAS v8</div>
 
         {/* Bars */}
         <div style={{ flex: 1, display: 'flex', gap: 80, alignItems: 'flex-end', justifyContent: 'center' }}>

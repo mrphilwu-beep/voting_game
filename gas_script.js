@@ -1,7 +1,7 @@
 // ============================================================
 // 牛肉麵節投票遊戲 — Google Apps Script 後端
-// 版本：v7  (2026-05-17)
-// 更新：新增 getVersion endpoint，方便從前端確認伺服器版本
+// 版本：v8  (2026-05-17)
+// 更新：修正 Sheets 布林/字串型別問題，voting_ended 改用數字 1/0
 // 從 Google Sheets「擴充功能 → Apps Script」貼上並部署
 // 部署設定：執行身分「我」、存取「任何人（含匿名）」
 // ============================================================
@@ -14,7 +14,7 @@ function doGet(e) {
   if (action === 'getVoters') return respond(getVoters());
   if (action === 'endVoting') return respond(setVotingEnded(true));
   if (action === 'getStatus') return respond(getStatus());
-  if (action === 'getVersion') return respond({ version: 'v7' });
+  if (action === 'getVersion') return respond({ version: 'v8' });
   return respond({ error: 'unknown action' });
 }
 
@@ -36,7 +36,7 @@ function getSettingsSheet(ss) {
   if (!sheet) {
     sheet = ss.insertSheet('Settings');
     sheet.appendRow(['Key', 'Value']);
-    sheet.appendRow(['voting_ended', 'false']);
+    sheet.appendRow(['voting_ended', 0]);
   }
   return sheet;
 }
@@ -46,7 +46,7 @@ function getStatus() {
   const sheet = getSettingsSheet(ss);
   const rows = sheet.getDataRange().getValues();
   for (const [key, value] of rows) {
-    if (key === 'voting_ended') return { votingEnded: value === 'true' };
+    if (key === 'voting_ended') return { votingEnded: value === 1 || value === true || String(value) === 'true' || String(value) === '1' };
   }
   return { votingEnded: false };
 }
@@ -57,11 +57,11 @@ function setVotingEnded(ended) {
   const rows = sheet.getDataRange().getValues();
   for (let i = 0; i < rows.length; i++) {
     if (rows[i][0] === 'voting_ended') {
-      sheet.getRange(i + 1, 2).setValue(ended ? 'true' : 'false');
+      sheet.getRange(i + 1, 2).setValue(ended ? 1 : 0);
       return { success: true };
     }
   }
-  sheet.appendRow(['voting_ended', ended ? 'true' : 'false']);
+  sheet.appendRow(['voting_ended', ended ? 1 : 0]);
   return { success: true };
 }
 
