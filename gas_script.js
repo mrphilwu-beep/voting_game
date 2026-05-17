@@ -1,7 +1,7 @@
 // ============================================================
 // 牛肉麵節投票遊戲 — Google Apps Script 後端
-// 版本：v6  (2026-05-17)
-// 更新：submitVote 也檢查 votingEnded，防止進入投票畫面後仍能提交
+// 版本：v7  (2026-05-17)
+// 更新：新增 getVersion endpoint，方便從前端確認伺服器版本
 // 從 Google Sheets「擴充功能 → Apps Script」貼上並部署
 // 部署設定：執行身分「我」、存取「任何人（含匿名）」
 // ============================================================
@@ -14,6 +14,7 @@ function doGet(e) {
   if (action === 'getVoters') return respond(getVoters());
   if (action === 'endVoting') return respond(setVotingEnded(true));
   if (action === 'getStatus') return respond(getStatus());
+  if (action === 'getVersion') return respond({ version: 'v7' });
   return respond({ error: 'unknown action' });
 }
 

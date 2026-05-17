@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getResults, resetVotes, endVoting } from '../utils/api';
+import { getResults, resetVotes, endVoting, getVersion } from '../utils/api';
 
 export default function AdminPanel() {
   const [results, setResults] = useState({ red: 0, white: 0, total: 0 });
@@ -10,10 +10,12 @@ export default function AdminPanel() {
   const [votingEnded, setVotingEnded] = useState(
     () => localStorage.getItem('voting_ended') === '1'
   );
+  const [gasVersion, setGasVersion] = useState('...');
 
   useEffect(() => {
     doFetch();
     const id = setInterval(doFetch, 5000);
+    getVersion().then(r => setGasVersion(r.version || '?')).catch(() => setGasVersion('err'));
     return () => clearInterval(id);
   }, []);
 
@@ -162,7 +164,7 @@ export default function AdminPanel() {
           {'  ·  '}
           <a href="/results" style={{ color: '#555', textDecoration: 'none' }}>投票結果</a>
         </div>
-        <div style={{ marginTop: 12, color: '#ffd700', fontSize: 10, textAlign: 'center', fontFamily: 'monospace' }}>GAS v6</div>
+        <div style={{ marginTop: 12, color: '#ffd700', fontSize: 10, textAlign: 'center', fontFamily: 'monospace' }}>GAS 伺服器：{gasVersion}</div>
       </div>
 
     </div>
